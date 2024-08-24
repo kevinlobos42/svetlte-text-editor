@@ -8,7 +8,7 @@
 	import { toPng } from 'html-to-image';
 	import fileSaver from 'file-saver';
 	import { page } from '$app/stores';
-	import { doc, getDoc, setDoc } from 'firebase/firestore';
+	import { arrayUnion, doc, getDoc, setDoc } from 'firebase/firestore';
 	import { auth, db } from '$lib/firebaseConfig';
 	import { onMount } from 'svelte';
 
@@ -19,6 +19,7 @@
 	let doc_id = $page.url.pathname.substr(1);
 
 	let docRef;
+	let userRef;
 
 	function handleChange(e) {
 		title = e.target.value || 'Untitled';
@@ -46,6 +47,7 @@
 	}
 
 	async function save() {
+		userRef = doc(db, 'Users', auth.currentUser.uid)
 		try {
 			await setDoc(
 				docRef,
@@ -56,6 +58,13 @@
 				},
 				{ merge: true }
 			);
+
+			await setDoc(
+				userRef,
+				{files: arrayUnion(doc_id)},
+				{merge:true}
+			)
+
 		} catch (error) {
 			console.error(error);
 		}

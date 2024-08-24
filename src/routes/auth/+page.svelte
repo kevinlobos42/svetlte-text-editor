@@ -9,6 +9,7 @@
 	const provider = new GithubAuthProvider();
 
 	const handleGitHubSignIn = async () => {
+		console.log(auth);
 		try {
 			isSigningIn = true;
 			await signInWithPopup(auth, provider);

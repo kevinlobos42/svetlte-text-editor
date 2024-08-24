@@ -15,15 +15,15 @@
 	import { doc, setDoc } from 'firebase/firestore';
 
 	import { onMount } from 'svelte';
+	
 
 	onMount(async () => {
-		console.log('asdasdasdds');
 
-		onAuthStateChanged(auth, async (user) => {
+		onAuthStateChanged(auth, (user) => {
 			const docRef = doc(db, 'Users', auth.currentUser?.uid);
 			console.log('asdasddsasa');
 			try {
-				await setDoc(
+				setDoc(
 					docRef,
 					{ email: auth.currentUser.email, files: [], recent: [] },
 					{ merge: true }

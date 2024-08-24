@@ -29,5 +29,14 @@
 		"lint": "prettier --check .",
 		"format": "prettier --write ."
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"docx": "^8.5.0",
+		"file-saver": "^2.0.5",
+		"firebase": "^10.13.0",
+		"html-to-image": "^1.11.11",
+		"html2canvas": "^1.4.1",
+		"jspdf": "^2.5.1",
+		"uuid": "^10.0.0"
+	}
 }

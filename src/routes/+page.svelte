@@ -1,29 +1,68 @@
-<script>
-	import { Toolbar } from "$lib/index";
-
-    let title='Untitled'
-
-    function handleChange(e) {
-		title = e.target.value || 'Untitled';
+<script context="module">
+	export async function load({ data }) {
+		return {
+			props: {
+				user: data.user
+			}
+		};
 	}
-
 </script>
 
-<div class="w-full h-screen flex justify-center items-center gap-10 flex-col">
-    <div class='w-[773px] flex flex-col justify-start gap-4 bg-white p-3 rounded shadow'>
-        <input type="text" class="text-3xl bg-transparent border-b border-neutral-400" value={title} on:change={handleChange}/>
-        <Toolbar />
-    </div>
-    <div class="page w-[773px] h-[1000px] p-2 bg-white" contenteditable="true" id="page">
-        
-    </div>
+<script>
+	import { auth, db } from '$lib/firebaseConfig';
+
+	import { onAuthStateChanged } from 'firebase/auth';
+	import { doc, setDoc } from 'firebase/firestore';
+
+	import { onMount } from 'svelte';
+
+	onMount(async () => {
+		console.log('asdasdasdds');
+
+		onAuthStateChanged(auth, async (user) => {
+			const docRef = doc(db, 'Users', auth.currentUser?.uid);
+			console.log('asdasddsasa');
+			try {
+				await setDoc(
+					docRef,
+					{ email: auth.currentUser.email, files: [], recent: [] },
+					{ merge: true }
+				);
+			} catch (error) {
+				console.log(error);
+			}
+			if (!user) {
+				window.location.href = '/';
+			}
+		});
+	});
+
+	let uuid = '';
+
+	async function createFile() {
+		const response = await fetch('/api/uuid');
+		const data = await response.json();
+		uuid = data.uuid;
+
+		window.location.href = window.location.origin + `/${uuid}`;
+	}
+</script>
+
+<div class="w-full h-screen flex items-center justify-center relative text-white">
+	<div class="w-[200px] flex flex-col gap-6 items-center">
+		<button
+			class="w-[200px] text-slate-600 font-medium px-5 py-2 bg-white rounded"
+			on:click={createFile}>Create new File</button
+		>
+		<hr class="w-full" />
+		<p>or</p>
+		<hr class="w-full" />
+		<div class="flex flex-col gap-4 w-[200px]">
+			<input class="rounded py-1 px-2 text-slate-600" type="text" placeholder="Room ID..." />
+			<button class="text-white font-medium px-5 py-2 bg-slate-700 rounded">Join Room by ID</button>
+		</div>
+	</div>
 </div>
 
 <style>
-    .page{
-        box-shadow: 0px 0px 12px 1px rgb(0,0,0,.3);
-    }
-    .shadow{
-        box-shadow: 0px 0px 12px 1px rgb(0,0,0,.3);
-    }
 </style>

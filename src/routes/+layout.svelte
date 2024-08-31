@@ -25,9 +25,12 @@ import '../app.css';
     });
 </script>
 
-<div class="w-full h-screen bg-sky-600 relative">
+<div class="w-full min-h-screen bg-neutral-800 relative flex flex-col items-center px-8">
 	{#if authenticated}
-		<button class="fixed right-0 top-0 rounded w-[100px] py-2 text-center bg-blue-100 mr-5 mt-5 z-10" on:click={logout}>Logout</button>
+        <div class="flex justify-between text-white items-center max-w-[1400px] w-full pt-4 pb-6">
+            <a href="/"><p class='font-bold text-3xl text-slate-700 py-0.5'><span class='px-1 rounded-l bg-sky-100'>My</span><span class='bg-sky-800 rounded text-white p-2'>Drive</span></p></a>
+            <button class="rounded w-[100px] py-2 text-center bg-blue-100 z-10 text-slate-700" on:click={logout}>Logout</button>
+        </div>
 	{/if}
 	<slot />
 </div>

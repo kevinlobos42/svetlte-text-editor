@@ -8,7 +8,7 @@
 	import { toPng } from 'html-to-image';
 	import fileSaver from 'file-saver';
 	import { page } from '$app/stores';
-	import { arrayUnion, doc, getDoc, setDoc } from 'firebase/firestore';
+	import { arrayUnion, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 	import { auth, db } from '$lib/firebaseConfig';
 	import { onMount } from 'svelte';
 
@@ -47,44 +47,46 @@
 	}
 
 	async function save() {
-		userRef = doc(db, 'Users', auth.currentUser.uid)
+		userRef = doc(db, 'Users', auth.currentUser.uid);
 		try {
 			await setDoc(
 				docRef,
 				{
 					authorId: auth.currentUser.uid,
 					title: title,
-					content: document.getElementById('page')?.innerHTML
+					content: document.getElementById('page')?.innerHTML,
+					lastUpdated: new Date()
 				},
 				{ merge: true }
 			);
 
-			await setDoc(
-				userRef,
-				{files: arrayUnion(doc_id)},
-				{merge:true}
-			)
-
+			await updateDoc(userRef, { files: arrayUnion(doc_id) }, { merge: true });
 		} catch (error) {
 			console.error(error);
 		}
 	}
 
-    onMount(async ()=>{
-        docRef = doc(db, 'Doc', doc_id);
-        const docSnap = await getDoc(docRef);
-        
-        if(docSnap.exists()){
-            const data = docSnap.data();
-            title = data.title
-            content = data.content
-        }else {
-            await setDoc(docRef, {authorId: auth.currentUser.uid}, {merge: true})
-        }
-    })
+	onMount(async () => {
+		docRef = doc(db, 'Doc', doc_id);
+		const docSnap = await getDoc(docRef);
+
+		if (docSnap.exists()) {
+			const data = docSnap.data();
+			title = data.title;
+			content = data.content;
+		} else {
+			await setDoc(
+				docRef,
+				{ authorId: auth.currentUser.uid, title: 'Untitled', content: '', lastUpdated: new Date() },
+				{ merge: true }
+			);
+		}
+	});
 </script>
 
-<div class="w-full h-screen flex justify-center items-center gap-10 flex-col relative">
+<div
+	class="max-w-[1400px] w-full  flex items-center gap-2 flex-col relative"
+>
 	<div class="w-[773px] flex flex-col justify-start gap-4 bg-white p-3 rounded shadow">
 		<input
 			type="text"
@@ -101,10 +103,10 @@
 		bind:innerHTML={content}
 	></div>
 
-	<div class="absolute right-10 bottom-10 flex flex-col">
+	<div class="fixed right-10 bottom-10 flex flex-col">
 		{#if chatOpen}
 			<div class="rounded bg-white mb-3 flex flex-col w-[350px] h-[500px]">
-				<div class="w-full h-12 bg-neutral-800 rounded-t flex justify-between items-center px-4">
+				<div class="w-full h-12 bg-neutral-700 rounded-t flex justify-between items-center px-4">
 					<p class="text-white font-medium">{title} chat</p>
 					<button on:click={() => (chatOpen = false)}>
 						<MaterialSymbolsClose style="color:white" class="h-[80%]" />
@@ -121,7 +123,7 @@
 			</div>
 		{/if}
 		<button
-			class="h-16 w-16 bg-neutral-800 rounded-full grid place-items-center cursor-pointer self-end"
+			class="h-16 w-16 bg-neutral-700 rounded-full grid place-items-center cursor-pointer self-end"
 			on:click={() => (chatOpen = !chatOpen)}
 		>
 			{#if !chatOpen}
@@ -131,7 +133,7 @@
 			{/if}
 		</button>
 	</div>
-	<div class="absolute left-10 bottom-10 flex flex-col">
+	<div class="fixed left-10 bottom-10 flex flex-col">
 		{#if saveOpen}
 			<div class="rounded bg-white mb-3 flex flex-col">
 				<button
@@ -148,13 +150,12 @@
 				>
 				<button
 					class="text-left p-2 text-slate-600 hover:bg-sky-100 hover:text-slate-500 cursor-pointer transition-all duration-200"
-                    on:click={save}
-					>Save</button
+					on:click={save}>Save</button
 				>
 			</div>
 		{/if}
 		<button
-			class="h-16 w-16 bg-neutral-800 rounded-full grid place-items-center cursor-pointer self-start"
+			class="h-16 w-16 bg-neutral-700 rounded-full grid place-items-center cursor-pointer self-start"
 			on:click={() => (saveOpen = !saveOpen)}
 		>
 			{#if !saveOpen}

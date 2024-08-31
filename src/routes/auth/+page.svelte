@@ -37,7 +37,7 @@
 	});
 </script>
 
-<div class="w-full h-screen grid place-items-center">
+<div class="max-w-[1400px] w-full h-screen grid place-items-center">
 	<button
 		disabled={isSigningIn}
 		on:click={handleGitHubSignIn}

@@ -1,4 +1,5 @@
 <script>
+// @ts-nocheck
 	import { Toolbar } from '$lib/index';
 	import MdiFloppy from '~icons/mdi/floppy';
 	import MaterialSymbolsClose from '~icons/material-symbols/close';
@@ -11,6 +12,7 @@
 	import { arrayUnion, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 	import { auth, db } from '$lib/firebaseConfig';
 	import { onMount } from 'svelte';
+	import Message from '$lib/components/message.svelte';
 
 	let title = 'Untitled';
 	let saveOpen = false;
@@ -18,9 +20,15 @@
 	let content = '';
 	let doc_id = $page.url.pathname.substr(1);
 
+	/**
+	 * @type {import("@firebase/firestore").DocumentReference<import("@firebase/firestore").DocumentData, import("@firebase/firestore").DocumentData> | import("@firebase/firestore").DocumentReference<{ authorId: string; title: string; content: string | undefined; lastUpdated: Date; }, import("@firebase/firestore").DocumentData>}
+	 */
 	let docRef;
 	let userRef;
 
+	/**
+	 * @param {{ target: { value: string; }; }} e
+	 */
 	function handleChange(e) {
 		title = e.target.value || 'Untitled';
 	}
@@ -84,9 +92,7 @@
 	});
 </script>
 
-<div
-	class="max-w-[1400px] w-full  flex items-center gap-2 flex-col relative"
->
+<div class="max-w-[1400px] w-full flex items-center gap-2 flex-col relative">
 	<div class="w-[773px] flex flex-col justify-start gap-4 bg-white p-3 rounded shadow">
 		<input
 			type="text"
@@ -105,20 +111,53 @@
 
 	<div class="fixed right-10 bottom-10 flex flex-col">
 		{#if chatOpen}
-			<div class="rounded bg-white mb-3 flex flex-col w-[350px] h-[500px]">
-				<div class="w-full h-12 bg-neutral-700 rounded-t flex justify-between items-center px-4">
-					<p class="text-white font-medium">{title} chat</p>
-					<button on:click={() => (chatOpen = false)}>
-						<MaterialSymbolsClose style="color:white" class="h-[80%]" />
+			<div class="bg-white shadow-md rounded-lg max-w-lg w-full">
+				<div
+					class="p-4 border-b bg-blue-500 text-white rounded-t-lg flex justify-between items-center"
+				>
+					<p class="text-lg font-semibold">{title}</p>
+					<button
+						id="close-chat"
+						class="text-gray-300 hover:text-gray-400 focus:outline-none focus:text-gray-400"
+						on:click={() => (chatOpen = !chatOpen)}
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="w-6 h-6"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M6 18L18 6M6 6l12 12"
+							></path>
+						</svg>
 					</button>
 				</div>
-				<div class="flex-grow"></div>
-				<div class="w-full flex">
+
+				<div id="chatbox" class="p-4 h-96 overflow-y-auto">
+					<!-- Chat messages will be displayed here -->
+					<Message text="This is a text" time="12:00" name = "Bob Bobby"/>
+					<Message text="This is a Response" time="12:13" name = "Kevin Lobos"/>
+					<Message text="Followup" time="12:14" name = "Kevin Lobos"/>
+					<Message text="Confirmation" time="12:20" name = "Bob Bobby"/>
+
+				</div>
+				<div class="p-4 border-t flex">
 					<input
-						class="w-[75%] border-t border-neutral-400 px-2 rounded-bl"
-						placeholder="Send Message..."
+						id="user-input"
+						type="text"
+						placeholder="Type a message"
+						class="w-full px-3 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
 					/>
-					<button class="bg-blue-500 w-[25%] py-2 text-white">Send</button>
+					<button
+						id="send-button"
+						class="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600 transition duration-300"
+						>Send</button
+					>
 				</div>
 			</div>
 		{/if}

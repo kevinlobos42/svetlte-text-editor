@@ -88,11 +88,11 @@
 			files.splice(idx, 1);
 			clicked.splice(idx, 1);
 			emails.splice(idx, 1);
-			let temp = []
+			let temp = [];
 			clicked.forEach((e) => {
 				temp.push(false);
 			});
-		clicked = temp;
+			clicked = temp;
 
 			await updateDoc(UserFilesRef, {
 				files: arrayRemove(file.id)

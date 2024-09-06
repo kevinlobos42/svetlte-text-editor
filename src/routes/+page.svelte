@@ -53,7 +53,7 @@
 
 <div class="max-w-[1400px] w-full flex-grow pb-4 flex justify-center relative text-white">
 	<Sidebar func={createFile} />
-	<div class="flex-grow bg-neutral-900 rounded-xl p-4">
+	<div class="flex-grow bg-neutral-900 rounded-xl p-4 px-8">
 		<p class="text-2xl text-center mb-4">Recent Files</p>
 		<Table/>
 	</div>

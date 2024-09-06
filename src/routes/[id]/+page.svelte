@@ -14,7 +14,7 @@
 
 	let title = 'Untitled';
 	let saveOpen = false;
-	let chatOpen = true;
+	let chatOpen = false;
 	let content = '';
 	let doc_id = $page.url.pathname.substr(1);
 

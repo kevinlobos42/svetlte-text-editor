@@ -13,6 +13,7 @@
 	import { auth, db } from '$lib/firebaseConfig';
 	import { onMount } from 'svelte';
 	import Message from '$lib/components/message.svelte';
+	import ChatBox from '$lib/components/ChatBox.svelte';
 
 	let title = 'Untitled';
 	let saveOpen = false;
@@ -111,55 +112,8 @@
 
 	<div class="fixed right-10 bottom-10 flex flex-col">
 		{#if chatOpen}
-			<div class="bg-white shadow-md rounded-lg max-w-lg w-full">
-				<div
-					class="p-4 border-b bg-blue-500 text-white rounded-t-lg flex justify-between items-center"
-				>
-					<p class="text-lg font-semibold">{title}</p>
-					<button
-						id="close-chat"
-						class="text-gray-300 hover:text-gray-400 focus:outline-none focus:text-gray-400"
-						on:click={() => (chatOpen = !chatOpen)}
-					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							class="w-6 h-6"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M6 18L18 6M6 6l12 12"
-							></path>
-						</svg>
-					</button>
-				</div>
 
-				<div id="chatbox" class="p-4 h-96 overflow-y-auto">
-					<!-- Chat messages will be displayed here -->
-					<Message text="This is a text" time="12:00" name = "Bob Bobby"/>
-					<Message text="This is a Response" time="12:13" name = "Kevin Lobos"/>
-					<Message text="Followup" time="12:14" name = "Kevin Lobos"/>
-					<Message text="Confirmation" time="12:20" name = "Bob Bobby"/>
-
-				</div>
-				<div class="p-4 border-t flex">
-					<input
-						id="user-input"
-						type="text"
-						placeholder="Type a message"
-						class="w-full px-3 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-					/>
-					<button
-						id="send-button"
-						class="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600 transition duration-300"
-						>Send</button
-					>
-				</div>
-			</div>
+			<ChatBox title={title} bind:chatOpen/>
 		{/if}
 		<button
 			class="h-16 w-16 bg-neutral-700 rounded-full grid place-items-center cursor-pointer self-end"

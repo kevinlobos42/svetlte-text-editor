@@ -9,7 +9,7 @@
 	import { toPng } from 'html-to-image';
 	import fileSaver from 'file-saver';
 	import { page } from '$app/stores';
-	import { arrayUnion, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+	import { arrayUnion, doc, getDoc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
 	import { auth, db } from '$lib/firebaseConfig';
 	import { onMount } from 'svelte';
 	import Message from '$lib/components/message.svelte';
@@ -26,12 +26,14 @@
 	 */
 	let docRef;
 	let userRef;
+	let timer;
 
 	/**
 	 * @param {{ target: { value: string; }; }} e
 	 */
 	function handleChange(e) {
 		title = e.target.value || 'Untitled';
+		changePage()
 	}
 
 	function savePDF() {
@@ -79,18 +81,32 @@
 		docRef = doc(db, 'Doc', doc_id);
 		const docSnap = await getDoc(docRef);
 
-		if (docSnap.exists()) {
-			const data = docSnap.data();
-			title = data.title;
-			content = data.content;
-		} else {
+		// if (docSnap.exists()) {
+		// 	const data = docSnap.data();
+		// 	title = data.title;
+		// 	content = data.content;
+		// }
+		if(!docSnap.exists()){
 			await setDoc(
 				docRef,
 				{ authorId: auth.currentUser.uid, title: 'Untitled', content: '', lastUpdated: new Date() },
 				{ merge: true }
 			);
 		}
+
+		const unsub = onSnapshot(docRef, doc=>{
+			title = doc.data().title
+			content = doc.data().content
+
+		})
 	});
+
+	function changePage (){
+		clearTimeout(timer);
+		timer = setTimeout(()=>{
+			save()
+		}, 1000)
+	}
 </script>
 
 <div class="max-w-[1400px] w-full flex items-center gap-2 flex-col relative">
@@ -108,6 +124,7 @@
 		contenteditable="true"
 		id="page"
 		bind:innerHTML={content}
+		on:input={changePage}
 	></div>
 
 	<div class="fixed right-10 bottom-10 flex flex-col">
@@ -140,10 +157,6 @@
 				<button
 					class="text-left p-2 text-slate-600 border-b hover:bg-sky-100 hover:text-slate-500 cursor-pointer transition-all duration-200"
 					>Download DOCX</button
-				>
-				<button
-					class="text-left p-2 text-slate-600 hover:bg-sky-100 hover:text-slate-500 cursor-pointer transition-all duration-200"
-					on:click={save}>Save</button
 				>
 			</div>
 		{/if}

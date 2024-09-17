@@ -54,7 +54,7 @@
 
 <div class="flex items-center gap-4">
 	<!-- FONT -->
-	<select class="w-40 bg-transparent no-arrow" id="fontName" on:change={(e)=>{modifyText('fontName', false, e.target.value)}}>
+	<select class="flex-1 bg-transparent no-arrow" id="fontName" on:change={(e)=>{modifyText('fontName', false, e.target.value)}}>
 		<option value="arial">Arial</option>
 		<option value="calibri">Calibri</option>
 		<option value="fantasy">Papyrus</option>

@@ -14,10 +14,12 @@
 	import { onMount } from 'svelte';
 	import Message from '$lib/components/message.svelte';
 	import ChatBox from '$lib/components/ChatBox.svelte';
+	import Share from '$lib/components/Share.svelte';
 
 	let title = 'Untitled';
 	let saveOpen = false;
 	let chatOpen = false;
+	let shareOpen = false;
 	let content = '';
 	let doc_id = $page.url.pathname.substr(1);
 
@@ -111,12 +113,18 @@
 
 <div class="max-w-[1400px] w-full flex items-center gap-2 flex-col relative">
 	<div class="w-[773px] flex flex-col justify-start gap-4 bg-white p-3 rounded shadow">
-		<input
+		<div class="w-full flex items-center">
+			<input
 			type="text"
-			class="text-3xl bg-transparent border-b border-neutral-400"
+			class="text-3xl bg-transparent border-b border-neutral-400 flex-1"
 			value={title}
 			on:change={handleChange}
-		/>
+			/>
+			<button class="bg-sky-200 rounded-full px-6 py-2 font-[500] text-lg text-blue-900 hover:bg-blue-100 hover:text-slate-500 transition-all" on:click={()=>shareOpen = true}>Share</button>
+			{#if shareOpen}
+				<Share bind:shareOpen/>
+			{/if}
+		</div>
 		<Toolbar />
 	</div>
 	<div

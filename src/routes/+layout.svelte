@@ -18,11 +18,16 @@ import '../app.css';
 	onMount(() => {
         // If the user is already signed in, redirect to the homepage
         onAuthStateChanged(auth, (user) => {
+            const atm = auth
+            console.log(user, Boolean(user));
             if (user) {
                authenticated=true;
+            }else if(window.location.pathname !='/auth'){
+                window.location.href = '/auth';
             }
         });
     });
+    // console.log(auth);
 </script>
 
 <div class="w-full min-h-screen bg-neutral-800 relative flex flex-col items-center px-8">

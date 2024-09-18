@@ -15,7 +15,6 @@
 	export let icon = null;
 
 	toastVal.subscribe((val) => {
-		console.log(val.message !== null);
 		severity = val.severity;
 		message = val.message;
 		icon = val.icon;

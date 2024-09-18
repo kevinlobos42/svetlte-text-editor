@@ -79,6 +79,21 @@
 		}
 	}
 
+	function cleanup() {
+		const page = document.getElementById('page');
+		const spans = page.querySelectorAll('span');
+
+		console.log(page);
+		spans.forEach((span) => {
+			const content = span.textContent;
+			if (content == '') {
+				span.remove();
+			}
+		});
+
+		console.log(page);
+	}
+
 	onMount(async () => {
 		docRef = doc(db, 'Doc', doc_id);
 		const docSnap = await getDoc(docRef);
@@ -105,6 +120,7 @@
 	function changePage() {
 		clearTimeout(timer);
 		timer = setTimeout(() => {
+			cleanup();
 			save();
 		}, 1000);
 	}
@@ -130,7 +146,7 @@
 		<Toolbar />
 	</div>
 	<div
-		class="page w-[773px] h-[1000px] p-4 bg-white"
+		class="page w-[773px] min-h-[1000px] p-4 bg-white"
 		contenteditable="true"
 		id="page"
 		bind:innerHTML={content}
@@ -194,8 +210,8 @@
 		height: 0;
 		opacity: 1;
 		overflow: hidden; /* Prevent content from showing before expansion */
-		animation: expandMenuLeft .3s ease forwards;
-		transition: all .3s ease
+		animation: expandMenuLeft 0.3s ease forwards;
+		transition: all 0.3s ease;
 	}
 	@keyframes expandMenuLeft {
 		0% {

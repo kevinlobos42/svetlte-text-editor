@@ -7,37 +7,102 @@
 	import TablerItalic from '~icons/tabler/italic';
 	import TablerUnderline from '~icons/tabler/underline';
 
-	let size = 3;
+	let size = 12;
 	let align = 'left';
 	let options: Boolean[] = [false, false, false];
 
 	function handleChange(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
-		console.log(e.target.value, 1, e.target.value < 1);
+		if (e.target.value < 4) {
+			size = 4;
+			e.target.value = 4;
+			return;
+		} else if (e.target.value > 100) {
+			size = 100;
+			e.target.value = 100;
 
-		if(e.target.value < 1){
-			size = 1
-			e.target.value = 1
-			return
-		}else if(e.target.value > 7){
-			size = 7
-			e.target.value = 7
-
-			return
-		}else size = e.target.value || 3;
+			return;
+		} else size = e.target.value || 12;
 	}
 	function increment() {
-		if(size  === 7){
-			return
+		if (size === 100) {
+			return;
 		}
 		size++;
-		modifyText('fontSize', true, size.toString())
+		// modifyText('fontSize', true, size.toString());
+		const page = document.getElementById('page');
+		if (page) {
+			const selection = window.getSelection();
+			const range = selection.getRangeAt(0);
+
+			if (selection.toString()) {
+				// Apply font size to selected text
+				document.execCommand('styleWithCSS', false, true);
+				document.execCommand('fontSize', false, '7'); // '7' is a placeholder
+				document.execCommand(
+					'insertHTML',
+					false,
+					`<span style="font-size: ${size * 2}px;">${selection.toString()}</span>`
+				);
+				// Clear selection
+				selection.removeAllRanges();
+			}
+
+			// Apply font size to the caret position for new text
+			const span = document.createElement('span');
+			span.style.fontSize = size;
+
+			// Insert the span at the caret position
+			range.deleteContents(); // Remove any selected text (if any)
+			range.insertNode(span); // Insert the new span at the caret
+
+			// Move the caret to the end of the new span
+			const textNode = document.createTextNode(''); // Empty text node
+			span.appendChild(textNode);
+			range.setStart(textNode, 0);
+			range.setEnd(textNode, 0);
+			window.getSelection().removeAllRanges();
+			window.getSelection().addRange(range);
+		}
 	}
 	function decrement() {
-		if(size  === 1){
-			return
+		if (size === 4) {
+			return;
 		}
 		size--;
-		modifyText('fontSize', true, size.toString())
+		const page = document.getElementById('page');
+		if (page) {
+			const selection = window.getSelection();
+			const range = selection.getRangeAt(0);
+
+			if (selection.toString()) {
+				// Apply font size to selected text
+				document.execCommand('styleWithCSS', false, true);
+				document.execCommand('fontSize', false, '7'); // '7' is a placeholder
+				document.execCommand(
+					'insertHTML',
+					false,
+					`<span style="font-size: ${size * 2}px;">${selection.toString()}</span>`
+				);
+				// Clear selection
+				selection.removeAllRanges();
+			}
+
+			// Apply font size to the caret position for new text
+			const span = document.createElement('span');
+			span.style.fontSize = size;
+
+			// Insert the span at the caret position
+			range.deleteContents(); // Remove any selected text (if any)
+			range.insertNode(span); // Insert the new span at the caret
+
+			// Move the caret to the end of the new span
+			const textNode = document.createTextNode(''); // Empty text node
+			span.appendChild(textNode);
+			range.setStart(textNode, 0);
+			range.setEnd(textNode, 0);
+			window.getSelection().removeAllRanges();
+			window.getSelection().addRange(range);
+		}
 	}
 	function toggleOption(option: number) {
 		options[option] = !options[option];
@@ -48,13 +113,20 @@
 	}
 
 	const modifyText = (command: string, defaultUi: boolean, value: string | undefined) => {
+		document.execCommand('styleWithCSS', false, true);
 		document.execCommand(command, defaultUi, value);
 	};
 </script>
 
 <div class="flex items-center gap-4">
 	<!-- FONT -->
-	<select class="flex-1 bg-transparent no-arrow" id="fontName" on:change={(e)=>{modifyText('fontName', false, e.target.value)}}>
+	<select
+		class="flex-1 bg-transparent no-arrow"
+		id="fontName"
+		on:change={(e) => {
+			modifyText('fontName', false, e.target.value);
+		}}
+	>
 		<option value="arial">Arial</option>
 		<option value="calibri">Calibri</option>
 		<option value="fantasy">Papyrus</option>
@@ -73,17 +145,26 @@
 	<div class="border border-neutral-300 w-fit rounded flex bg-white">
 		<button
 			class={`border-r border-neutral-200 px-3 py-1 `}
-			on:click={() => {toggleOption(0); modifyText('bold', false, undefined)}}
+			on:click={() => {
+				toggleOption(0);
+				modifyText('bold', false, undefined);
+			}}
 			id="bold"><CiBold /></button
 		>
 		<button
 			class={`px-3 py-1 `}
-			on:click={() => {toggleOption(1); modifyText('italic', false, undefined)}}
+			on:click={() => {
+				toggleOption(1);
+				modifyText('italic', false, undefined);
+			}}
 			id="italic"><TablerItalic /></button
 		>
 		<button
 			class={`border-l border-neutral-200 px-3 py-1 `}
-			on:click={() => {toggleOption(2); modifyText('underline', false, undefined)}}
+			on:click={() => {
+				toggleOption(2);
+				modifyText('underline', false, undefined);
+			}}
 			id="underline"><TablerUnderline /></button
 		>
 	</div>
@@ -92,17 +173,17 @@
 	<div class="border border-neutral-300 rounded flex bg-white">
 		<button
 			class={`border-r border-neutral-200 px-3 py-1 h-full`}
-			on:click={() => (modifyText('justifyLeft', true, undefined))}
+			on:click={() => modifyText('justifyLeft', true, undefined)}
 			id="justifyLeft"><CilAlignLeft /></button
 		>
 		<button
 			class={`px-3 py-1 `}
-			on:click={() => (modifyText('justifyCenter', true, undefined))}
+			on:click={() => modifyText('justifyCenter', true, undefined)}
 			id="justifCenter"><CilAlignCenter /></button
 		>
 		<button
 			class={`border-l border-neutral-200 px-3 py-1`}
-			on:click={() => (modifyText('justifyRight', true, undefined))}
+			on:click={() => modifyText('justifyRight', true, undefined)}
 			id="justifyRight"><CilAlignRight /></button
 		>
 	</div>

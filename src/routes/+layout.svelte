@@ -21,7 +21,6 @@ import '../app.css';
         // If the user is already signed in, redirect to the homepage
         onAuthStateChanged(auth, (user) => {
             const atm = auth
-            console.log(user, Boolean(user));
             if (user) {
                authenticated=true;
             }else if(window.location.pathname !='/auth'){

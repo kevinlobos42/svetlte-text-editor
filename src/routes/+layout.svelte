@@ -3,6 +3,8 @@
 import '../app.css';
 	import { auth } from '$lib/firebaseConfig';
 	import { onMount } from 'svelte';
+	import Toast from '$lib/components/Toast.svelte';
+	import { toastVal } from '../store';
 
 	let authenticated = false;
 
@@ -38,4 +40,5 @@ import '../app.css';
         </div>
 	{/if}
 	<slot />
+    <Toast />
 </div>

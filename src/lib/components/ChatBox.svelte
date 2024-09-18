@@ -63,7 +63,7 @@
     }
 </script>
 
-<div class="bg-white shadow-md rounded-lg max-w-lg w-full">
+<div class="menu bg-white shadow-md rounded-lg max-w-lg w-full">
 	<div class="p-4 border-b bg-blue-500 text-white rounded-t-lg flex justify-between items-center">
 		<p class="text-lg font-semibold">{title}</p>
 		<button
@@ -110,3 +110,24 @@
 		>
 	</div>
 </div>
+
+<style>
+@keyframes expandMenu {
+	0% {
+    transform: scale(0); /* Start from scale 0 */
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1); /* Scale up to full size */
+    opacity: 1;
+  }
+}
+
+/* Menu component styles */
+.menu {
+  opacity: 1;
+  overflow: hidden; /* Prevent content from showing before expansion */
+  transform-origin: bottom right; 
+  animation: expandMenu 0.15s linear forwards;
+}
+</style>

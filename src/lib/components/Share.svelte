@@ -1,7 +1,17 @@
 <script>
 	import PhCopy from '~icons/ph/copy';
-
+	import AkarIconsClipboard from '~icons/akar-icons/clipboard';
+	import { toastVal } from '../../store';
     export let shareOpen;
+
+	function copyToClipboard(){
+		navigator.clipboard.writeText(window.location.href)
+		toastVal.set({
+			message:'Successfully copied to clipboard',
+			severity:'success',
+			icon: AkarIconsClipboard
+		})
+	}
 </script>
 
 <div
@@ -16,7 +26,7 @@
 			/>
 			<p class="bg-slate-100 rounded px-3 py-2 flex items-center justify-between gap-3 text-sm">
 				{window.location.href}
-                <button class="p-2 hover:bg-slate-200 rounded-lg hover:text-slate-600 transition-all">
+                <button class="p-2 hover:bg-slate-200 rounded-lg hover:text-slate-600 transition-all" on:click={copyToClipboard}>
                     <PhCopy />
                 </button>
 			</p>

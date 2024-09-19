@@ -4,6 +4,7 @@
 	import { doc, setDoc } from 'firebase/firestore';
 	import { onMount } from 'svelte';
 	import MdiGithub from '~icons/mdi/github';
+	import { userId } from '../../store';
 
 	let isSigningIn = false;
 	const provider = new GithubAuthProvider();
@@ -16,6 +17,7 @@
 			onAuthStateChanged(auth, async (user) => {
 				if (user) {
 					window.location.href = '/';
+					userId.set({userId:user.uid})
 				} else {
 					console.error('User not signed in');
 					isSigningIn = false;
@@ -32,6 +34,7 @@
 		onAuthStateChanged(auth, (user) => {
 			if (user) {
 				window.location.href = '/';
+				userId.set({userId:user.uid})
 			}
 		});
 	});

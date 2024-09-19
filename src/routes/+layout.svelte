@@ -4,7 +4,7 @@ import '../app.css';
 	import { auth } from '$lib/firebaseConfig';
 	import { onMount } from 'svelte';
 	import Toast from '$lib/components/Toast.svelte';
-	import { toastVal } from '../store';
+	import { toastVal, userId } from '../store';
 
 	let authenticated = false;
 
@@ -23,6 +23,7 @@ import '../app.css';
             const atm = auth
             if (user) {
                authenticated=true;
+               userId.set({userId:user.uid})
             }else if(window.location.pathname !='/auth'){
                 window.location.href = '/auth';
             }

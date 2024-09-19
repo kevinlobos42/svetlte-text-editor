@@ -140,7 +140,7 @@
 				on:click={() => (shareOpen = true)}>Share</button
 			>
 			{#if shareOpen}
-				<Share bind:shareOpen />
+				<Share bind:shareOpen doc_id={doc_id} />
 			{/if}
 		</div>
 		<Toolbar />

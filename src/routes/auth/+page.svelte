@@ -10,14 +10,13 @@
 	const provider = new GithubAuthProvider();
 
 	const handleGitHubSignIn = async () => {
-		console.log(auth);
 		try {
 			isSigningIn = true;
 			await signInWithPopup(auth, provider);
 			onAuthStateChanged(auth, async (user) => {
 				if (user) {
 					window.location.href = '/';
-					userId.set({userId:user.uid})
+					userId.set(user.uid)
 				} else {
 					console.error('User not signed in');
 					isSigningIn = false;
@@ -34,7 +33,7 @@
 		onAuthStateChanged(auth, (user) => {
 			if (user) {
 				window.location.href = '/';
-				userId.set({userId:user.uid})
+				userId.set(user.uid)
 			}
 		});
 	});

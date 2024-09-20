@@ -23,13 +23,12 @@ import '../app.css';
             const atm = auth
             if (user) {
                authenticated=true;
-               userId.set({userId:user.uid})
+               userId.set(user.uid)
             }else if(window.location.pathname !='/auth'){
                 window.location.href = '/auth';
             }
         });
     });
-    // console.log(auth);
 </script>
 
 <div class="w-full min-h-screen bg-neutral-800 relative flex flex-col items-center px-8">

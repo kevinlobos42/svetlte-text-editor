@@ -3,7 +3,7 @@
 	import AkarIconsClipboard from '~icons/akar-icons/clipboard';
 	import HeroiconsOutlineExclamation from '~icons/heroicons-outline/exclamation';
 	import SimpleLineIconsCheck from '~icons/simple-line-icons/check';
-	import { toastVal, userId } from '../../store';
+	import { currentUser, toastVal, userId } from '../../store';
 	import {
 		arrayUnion,
 		collection,
@@ -27,11 +27,6 @@
 	/**
 	 * @type string
 	 */
-	let currentUser;
-
-	userId.subscribe((val) => {
-		currentUser = val.userId;
-	});
 
 	function copyToClipboard() {
 		navigator.clipboard.writeText(window.location.href);

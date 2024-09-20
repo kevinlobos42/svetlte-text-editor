@@ -21,10 +21,6 @@
     let userMessage = ''
 
 	onMount(async () => {
-		// const querySnapshot = await getDocs(collection(db,'Chat', doc_id, 'messages'))
-		// querySnapshot.forEach(d=>{
-		//     console.log(d.data());
-		// })
 		const chatRef = collection(db, 'Chat', doc_id, 'messages');
 
 		const unsub = onSnapshot(chatRef, (doc) => {

@@ -1,4 +1,5 @@
 <script context="module">
+	// @ts-ignore
 	export async function load({ data }) {
 		return {
 			props: {
@@ -19,12 +20,16 @@
 
 	import { onMount } from 'svelte';
 
+	let selected = 'home';
+
 	onMount(async () => {
 		onAuthStateChanged(auth, async (user) => {
+			// @ts-ignore
 			const docRef = doc(db, 'Users', auth.currentUser?.uid);
 			try {
 				const doc = await getDoc(docRef);
 				if (!doc.exists()) {
+					// @ts-ignore
 					setDoc(docRef, { email: auth.currentUser.email, files: [], recent: [] }, { merge: true });
 				}
 			} catch (error) {
@@ -45,19 +50,18 @@
 
 		window.location.href = window.location.origin + `/${id}`;
 	}
-
-	const printnew = () => {
-		console.log('hello');
-	};
 </script>
 
 <div class="max-w-[1400px] w-full flex-grow pb-4 flex justify-center relative text-white">
-	<Sidebar func={createFile} />
+	<Sidebar func={createFile} bind:selected />
 	<div class="flex-grow bg-neutral-900 rounded-xl p-4 px-8">
-		<p class="text-2xl text-center mb-4">Recent Files</p>
-		<Table/>
+		{#if selected === 'home'}
+			<p class="text-2xl text-center mb-4">My Files</p>
+		{:else if selected === 'recent'}
+			<p class="text-2xl text-center mb-4">Recent Files</p>
+		{:else}
+			<p class="text-2xl text-center mb-4">Starred Files</p>
+		{/if}
+		<Table bind:selected />
 	</div>
 </div>
-
-<style>
-</style>

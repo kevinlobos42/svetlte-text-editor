@@ -14,8 +14,8 @@
 	 * @type {DocumentData|Undefined[]}
 	 */
 	let files = [];
-	let emails = [];
 	let clicked = [];
+	export let selected;
 
 	onMount(() => {
 		// @ts-ignore
@@ -32,13 +32,13 @@
 					let docData = (await getDoc(docRef)).data();
 					if (docData) {
 						docData.id = file;
-						getAuthor(docData.authorId, docData);
+						await getAuthor(docData.authorId, docData);
 						clicked.push(false);
 						await fetchedFiles.push(docData);
 					}
 				}
 
-				files = fetchedFiles.sort((a, b) => {
+				files = await fetchedFiles.sort((a, b) => {
 					return b?.lastUpdated - a?.lastUpdated;
 				});
 			} catch (error) {
@@ -55,18 +55,17 @@
 
 	async function getAuthor(authorId, docData) {
 		const userRef = doc(db, 'Users', authorId);
+		docData.email = ''
+		docData.authorized = false;
 		try {
 			const userData = await getDoc(userRef);
-			let temp = emails;
 			if (auth.currentUser.email === userData.data().email) {
 				docData.authorized = true;
-				temp.push('Me');
+				docData.email = 'Me'
 			} else {
 				docData.authorized = false;
-				temp.push(userData.data().email);
+				docData.email = userData.data().email
 			}
-
-			emails = temp;
 		} catch (error) {
 			console.log(error);
 		}
@@ -87,7 +86,6 @@
 			let idx = files.indexOf(file);
 			files.splice(idx, 1);
 			clicked.splice(idx, 1);
-			emails.splice(idx, 1);
 			let temp = [];
 			clicked.forEach((e) => {
 				temp.push(false);
@@ -113,7 +111,7 @@
 	</div>
 
 	<!-- Template File -->
-	{#key (emails, clicked)}
+	{#key (clicked)}
 		{#each files as file, i}
 			<div class="flex w-full border-b border-b-neutral-500 pb-3 mb-3 text-neutral-200">
 				<a
@@ -124,7 +122,7 @@
 					<SolarDocumentTextBold class="text-2xl text-sky-500" />
 					<p class="font-medium text-md">{file.title}</p>
 				</a>
-				<p class="font-medium text-md w-1/3">{emails[i]}</p>
+				<p class="font-medium text-md w-1/3">{file.email}</p>
 				<p class="font-medium text-md w-[100px]">{toDate(file.lastUpdated)}</p>
 				<button
 					class="text-xl w-[100px] flex items-center justify-end"

@@ -31,9 +31,9 @@
 	 */
 	let docRef;
 	let userRef;
+	let docOwner;
 	let timer;
 	let notAuth;
-	console.log(notAuth === undefined);
 	/**
 	 * @param {{ target: { value: string; }; }} e
 	 */
@@ -65,19 +65,21 @@
 
 	async function save() {
 		userRef = doc(db, 'Users', auth.currentUser.uid);
+
 		try {
-			await setDoc(
+			await updateDoc(
 				docRef,
 				{
-					authorId: auth.currentUser.uid,
 					title: title,
 					content: document.getElementById('page')?.innerHTML,
 					lastUpdated: new Date()
 				},
 				{ merge: true }
 			);
-
-			await updateDoc(userRef, { files: arrayUnion(doc_id) }, { merge: true });
+			if(docOwner === currentUser){
+				await updateDoc(userRef, { files: arrayUnion(doc_id) }, { merge: true });
+			}
+			await updateDoc(userRef, { recent: arrayUnion(doc_id) }, { merge: true });
 		} catch (error) {
 			console.error(error);
 		}
@@ -87,36 +89,28 @@
 		const page = document.getElementById('page');
 		const spans = page.querySelectorAll('span');
 
-		console.log(page);
 		spans.forEach((span) => {
 			const content = span.textContent;
 			if (content == '') {
 				span.remove();
 			}
 		});
-
-		console.log(page);
 	}
 
 	onMount(async () => {
 		docRef = doc(db, 'Doc', doc_id);
 		const docSnap = await getDoc(docRef);
-
-		// if (docSnap.exists()) {
-		// 	const data = docSnap.data();
-		// 	title = data.title;
-		// 	content = data.content;
-		// }
 		if (!docSnap.exists()) {
 			await setDoc(
 				docRef,
-				{ authorId: auth.currentUser.uid, title: 'Untitled', content: '', lastUpdated: new Date() },
+				{ authorId: auth.currentUser.uid, title: 'Untitled', content: '', lastUpdated: new Date(), users:[] },
 				{ merge: true }
 			);
 		}
 
 		const unsub = onSnapshot(docRef, (doc) => {
 			let data = doc.data();
+			docOwner = data.authorId
 			if (data.authorId === currentUser) {
 				notAuth = false;
 				showShare = true;
@@ -127,7 +121,6 @@
 				title = data.title;
 				content = data.content;
 			} else {
-				console.log('NOT AUTH', currentUser);
 				notAuth = true;
 			}
 		});
@@ -144,12 +137,17 @@
 
 {#if notAuth === undefined}
 	<div class="w-full grid place-items-center flex-1">
-		<MingcuteLoadingFill class="-mt-52 text-white text-4xl animate-spin"/>
+		<MingcuteLoadingFill class="-mt-52 text-white text-4xl animate-spin" />
 	</div>
 {:else if notAuth}
 	<div class="w-full flex flex-col justify-center items-center flex-1">
-		<p class="font-medium text-white text-xl -mt-52 text-center">You are not Authroized to view or edit this document</p>
-		<button class="bg-blue-500 rounded mt-6 px-8 py-3 text-white font-medium text-lg" on:click={()=>window.location.href = '/'}>Return to Home</button>
+		<p class="font-medium text-white text-xl -mt-52 text-center">
+			You are not Authroized to view or edit this document
+		</p>
+		<button
+			class="bg-blue-500 rounded mt-6 px-8 py-3 text-white font-medium text-lg"
+			on:click={() => (window.location.href = '/')}>Return to Home</button
+		>
 	</div>
 {:else}
 	<div class="max-w-[1400px] w-full flex items-center gap-2 flex-col relative">

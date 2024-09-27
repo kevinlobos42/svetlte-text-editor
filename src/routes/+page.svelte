@@ -30,7 +30,7 @@
 				const doc = await getDoc(docRef);
 				if (!doc.exists()) {
 					// @ts-ignore
-					setDoc(docRef, { email: auth.currentUser.email, files: [], recent: [] }, { merge: true });
+					setDoc(docRef, { email: auth.currentUser.email, files: [], recent: [], starred:[] }, { merge: true });
 				}
 			} catch (error) {
 				console.log(error);

@@ -9,6 +9,7 @@
 	// @ts-ignore
 	import SolarDocumentTextBold from '~icons/solar/document-text-bold';
 	import MiOptionsVertical from '~icons/mi/options-vertical';
+	import { currentUser } from '../../store';
 
 	/**
 	 * @type {DocumentData|Undefined[]}
@@ -16,6 +17,42 @@
 	let files = [];
 	let clicked = [];
 	export let selected;
+
+	async function onSelectedChange() {
+		if(currentUser != '' && currentUser){
+			const userRef = doc(db, 'Users', currentUser);
+			try {
+				const userData = await getDoc(userRef);
+				let temp = [];
+				if (selected === 'home') {
+					temp = userData.data()?.files;
+				} else if (selected === 'recent') {
+					temp = userData.data()?.recent;
+				} else {
+					temp = userData.data()?.starred;
+				}
+				const fetchedFiles = [];
+	
+				for (let file of temp) {
+					console.log(file);
+					let docRef = doc(db, 'Doc', file);
+					let docData = (await getDoc(docRef)).data();
+					if (docData) {
+						docData.id = file;
+						await getAuthor(docData.authorId, docData);
+						clicked.push(false);
+						await fetchedFiles.push(docData);
+					}
+				}
+				files = await fetchedFiles.sort((a, b) => {
+					return b?.lastUpdated - a?.lastUpdated;
+				});
+			} catch (error) {
+				console.log(error);
+			}
+		}
+	}
+	$: selected, onSelectedChange();
 
 	onMount(() => {
 		// @ts-ignore
@@ -55,16 +92,16 @@
 
 	async function getAuthor(authorId, docData) {
 		const userRef = doc(db, 'Users', authorId);
-		docData.email = ''
+		docData.email = '';
 		docData.authorized = false;
 		try {
 			const userData = await getDoc(userRef);
 			if (auth.currentUser.email === userData.data().email) {
 				docData.authorized = true;
-				docData.email = 'Me'
+				docData.email = 'Me';
 			} else {
 				docData.authorized = false;
-				docData.email = userData.data().email
+				docData.email = userData.data().email;
 			}
 		} catch (error) {
 			console.log(error);
@@ -111,7 +148,7 @@
 	</div>
 
 	<!-- Template File -->
-	{#key (clicked)}
+	{#key clicked}
 		{#each files as file, i}
 			<div class="flex w-full border-b border-b-neutral-500 pb-3 mb-3 text-neutral-200">
 				<a

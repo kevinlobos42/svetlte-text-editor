@@ -14,11 +14,5 @@
 
 # TODO
 ## Frontend
-- Make Skeleton for editor
-- give each file a UUID
-- implement basic web sockets
-
-## Backend
-- Skeleton for server
-- implement basic web sickets
-- connect a db, PostgresSQL for this project
+- Implement Recent files page, include personal and shared files
+- Implement starred files page
